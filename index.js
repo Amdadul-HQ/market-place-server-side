@@ -7,13 +7,10 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 
 
-const corsOption ={
-    origin:["http://localhost:5173"],
-    credential:true,
-}
+
 app.use(cookieParser());
 app.use(express.json())
-app.use(cors(corsOption))
+app.use(cors({origin:['http://localhost:5173'],credentials:true}))
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -36,6 +33,19 @@ async function run() {
     const database = client.db("marketDB");
     const jobCollection = database.collection("jobs");
     const bidCollection = database.collection("bids");
+
+
+    app.post('/jwt',async(req,res)=>{
+      const user = req.body;
+      const token = jwt.sign(user,process.env.ACCESS_SECRET_TOKEN,{expiresIn:'1h'})
+      res
+      .cookie('token',token,{
+        httpOnly:true,
+        sameSite:"none",
+        secure:false
+      })
+      .send({message:'success'})
+    })
 
     app.get('/jobs',async(req,res)=>{
         const cursor = jobCollection.find()

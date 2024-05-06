@@ -3,11 +3,15 @@ const cors = require('cors')
 const port = process.env.PORT || 5000;
 require('dotenv').config()
 const app = express()
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+
 
 const corsOption ={
     origin:["http://localhost:5173"],
     credential:true,
 }
+app.use(cookieParser());
 app.use(express.json())
 app.use(cors(corsOption))
 
